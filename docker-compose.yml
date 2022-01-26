@@ -1,0 +1,48 @@
+version: '2'
+services:
+  mysql:
+    image: 'mysql:8.0'
+    command: --default-authentication-plugin=mysql_native_password
+    expose:
+      - '3306'
+    ports:
+      - '3306:3306'
+    volumes:
+      - './data/mysql:/var/lib/mysql'
+    restart: always
+    env_file:
+      - docker.env
+  mongodb:
+    image: mongo:latest
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./data/mongodb:/data/db
+  redis:
+    image: bitnami/redis:latest
+    user: root
+    restart: always
+    environment:
+      ALLOW_EMPTY_PASSWORD: 'yes'
+    volumes:
+      - ./data/redis:/bitnami
+  backend:
+    build:
+      context: .
+      dockerfile: docker.backend
+    image: api-node-server
+    restart: always
+    expose:
+      - '3000'
+    ports:
+      - '3000:3000'
+      - '9229:9229'
+    container_name: api-node-server
+    depends_on:
+      - mongodb
+      - mysql
+    volumes:
+      - '.:/app'
+volumes:
+  wwwroot:
+    driver: local
