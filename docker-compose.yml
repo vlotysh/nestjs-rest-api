@@ -14,6 +14,8 @@ services:
       - docker.env
   mongodb:
     image: mongo:latest
+    environment:
+      - MONGODB_DATABASE="products"
     ports:
       - '27017:27017'
     volumes:
@@ -36,7 +38,7 @@ services:
       - '3000'
     ports:
       - '3000:3000'
-      - '9229:9229'
+      - '30000:9229'
     container_name: api-node-server
     depends_on:
       - mongodb
